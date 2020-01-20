@@ -229,6 +229,7 @@ typedef struct {
 typedef struct {
 	/* Used by ops[n].type == O_IMM/O_IMM1&O_IMM2/O_PTR/O_PC. Its size is ops[n].size. */
 	_Value imm;
+	uint8_t immOffset;
 	/* Used by ops[n].type == O_SMEM/O_MEM/O_DISP. Its size is dispSize. */
 	uint64_t disp;
 	/* Virtual address of first byte of instruction. */

@@ -982,6 +982,7 @@ int operands_extract(_CodeInfo* ci, _DInst* di, _InstInfo* ii,
 
 			if (type == OT_RELCB) {
 				operands_set_ts(op, O_PC, 8);
+				di->immOffset = ci->code - ps->start;
 				if (!read_stream_safe_sint(ci, &di->imm.sqword, sizeof(int8_t))) return FALSE;
 			} else { /* OT_RELC_FULL */
 
@@ -989,9 +990,11 @@ int operands_extract(_CodeInfo* ci, _DInst* di, _InstInfo* ii,
 				ps->usedPrefixes |= INST_PRE_OP_SIZE;
 				if (effOpSz == Decode16Bits) {
 					operands_set_ts(op, O_PC, 16);
+					di->immOffset = ci->code - ps->start;
 					if (!read_stream_safe_sint(ci, &di->imm.sqword, sizeof(int16_t))) return FALSE;
 				} else { /* Decode32Bits or Decode64Bits = for now they are the same */
 					operands_set_ts(op, O_PC, 32);
+					di->immOffset = ci->code - ps->start;
 					if (!read_stream_safe_sint(ci, &di->imm.sqword, sizeof(int32_t))) return FALSE;
 				}
 			}
