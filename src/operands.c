@@ -385,6 +385,7 @@ static int operands_extract_modrm(_CodeInfo* ci,
 			/* 6 is a special case - only 16 bits displacement. */
 			op->type = O_DISP;
 			di->dispSize = 16;
+			di->dispOffset = ci->code - ps->start;
 			if (!read_stream_safe_sint(ci, (int64_t*)&di->disp, sizeof(int16_t))) return FALSE;
 		} else {
 			/*
@@ -404,9 +405,11 @@ static int operands_extract_modrm(_CodeInfo* ci,
 
 			if (mod == 1) { /* 8 bits displacement + indirection */
 				di->dispSize = 8;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_sint(ci, (int64_t*)&di->disp, sizeof(int8_t))) return FALSE;
 			} else if (mod == 2) { /* 16 bits displacement + indirection */
 				di->dispSize = 16;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_sint(ci, (int64_t*)&di->disp, sizeof(int16_t))) return FALSE;
 			}
 		}
@@ -424,6 +427,7 @@ static int operands_extract_modrm(_CodeInfo* ci,
 
 			/* 5 is a special case - only 32 bits displacement, or RIP relative. */
 			di->dispSize = 32;
+			di->dispOffset = ci->code - ps->start;
 			if (!read_stream_safe_sint(ci, (int64_t*)&di->disp, sizeof(int32_t))) return FALSE;
 
 			if (ci->dt == Decode64Bits) {
@@ -454,9 +458,11 @@ static int operands_extract_modrm(_CodeInfo* ci,
 
 			if (mod == 1) {
 				di->dispSize = 8;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_sint(ci, (int64_t*)&di->disp, sizeof(int8_t))) return FALSE;
 			} else if ((mod == 2) || ((sib & 7) == 5)) { /* If there is no BASE, read DISP32! */
 				di->dispSize = 32;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_sint(ci, (int64_t*)&di->disp, sizeof(int32_t))) return FALSE;
 			}
 		}
@@ -1026,14 +1032,17 @@ int operands_extract(_CodeInfo* ci, _DInst* di, _InstInfo* ii,
 				ps->usedPrefixes |= INST_PRE_ADDR_SIZE;
 
 				di->dispSize = 16;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_uint(ci, &di->disp, sizeof(int16_t))) return FALSE;
 			} else if (effAdrSz == Decode32Bits) {
 				ps->usedPrefixes |= INST_PRE_ADDR_SIZE;
 
 				di->dispSize = 32;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_uint(ci, &di->disp, sizeof(int32_t))) return FALSE;
 			} else { /* Decode64Bits */
 				di->dispSize = 64;
+				di->dispOffset = ci->code - ps->start;
 				if (!read_stream_safe_uint(ci, &di->disp, sizeof(int64_t))) return FALSE;
 			}
 		break;

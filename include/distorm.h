@@ -250,6 +250,7 @@ typedef struct {
 	/* Used by ops[n].type == O_MEM. Base global register index (might be R_NONE), scale size (2/4/8), ignored for 0 or 1. */
 	uint8_t base, scale;
 	uint8_t dispSize;
+	uint8_t dispOffset;
 	/* Meta defines the instruction set class, and the flow control flags. Use META macros. */
 	uint16_t meta;
 	/* The CPU flags that the instruction operates upon. */
